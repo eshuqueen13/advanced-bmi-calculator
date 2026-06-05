@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced BMI Calculator</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transition: 0.3s;
+}
+
+/* Dark Mode */
+.dark {
+    background: linear-gradient(135deg, #1e1e2f, #121212);
+}
+
+.card {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 20px;
+    width: 340px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.toggle {
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+button {
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: #00c9a7;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+.result {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.history {
+    margin-top: 15px;
+    max-height: 100px;
+    overflow-y: auto;
+    font-size: 14px;
+}
+
+.clear-btn {
+    background: #ff7675;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="toggle" onclick="toggleMode()">🌗 Toggle Mode</div>
+    <h2>BMI Calculator</h2>
+
+    <input type="number" id="weight" placeholder="Weight (kg)">
+    <input type="number" id="height" placeholder="Height (cm)">
+
+    <button onclick="calculateBMI()">Calculate</button>
+    <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+
+    <div id="result" class="result"></div>
+    <div id="history" class="history"></div>
+</div>
+
+<script>
+let historyList = JSON.parse(localStorage.getItem("bmiHistory")) || [];
+
+function calculateBMI() {
+    let weight = document.getElementById("weight").value;
+    let height = document.getElementById("height").value;
+    let result = document.getElementById("result");
+
+    if (!weight || !height) {
+        result.innerText = "Enter all values!";
+        return;
+    }
+
+    height = height / 100;
+    let bmi = (weight / (height * height)).toFixed(2);
+
+    let status = "";
+    if (bmi < 18.5) status = "Underweight";
+    else if (bmi < 24.9) status = "Normal";
+    else if (bmi < 29.9) status = "Overweight";
+    else status = "Obese";
+
+    result.innerText = `BMI: ${bmi} (${status})`;
+
+    let entry = `BMI: ${bmi} (${status})`;
+    historyList.push(entry);
+    localStorage.setItem("bmiHistory", JSON.stringify(historyList));
+
+    displayHistory();
+}
+
+function displayHistory() {
+    let historyDiv = document.getElementById("history");
+    historyDiv.innerHTML = historyList.map(item => `<div>${item}</div>`).join("");
+}
+
+function clearHistory() {
+    localStorage.removeItem("bmiHistory");
+    historyList = [];
+    displayHistory();
+}
+
+function toggleMode() {
+    document.body.classList.toggle("dark");
+}
+
+displayHistory();
+</script>
+
+</body>
+</html>
